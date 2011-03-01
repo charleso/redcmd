@@ -90,7 +90,7 @@ module Textgoeshere
         f.field_with(:name => 'issue[fixed_version_id]').value = getversions[@opts[:fixed_version_id]] || 
             (raise "Version not found #{@opts[:fixed_version_id]}")
         f.field_with(:name => 'issue[description]').value = @opts[:description] || @opts[:subject]
-        @opts[:file].each_with_index do |file, i|
+        (@opts[:file] || {}).each_with_index do |file, i|
           f.file_uploads_with(:name => "attachments[#{i.to_s()}][file]").first.file_name = file
         end
         f.click_button
