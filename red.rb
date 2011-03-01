@@ -87,6 +87,8 @@ module Textgoeshere
           end
         end
         f.field_with(:name => 'issue[subject]').value = @opts[:subject]
+        f.field_with(:name => 'issue[fixed_version_id]').value = getversions[@opts[:fixed_version_id]] || 
+            (raise "Version not found #{@opts[:fixed_version_id]}")
         f.field_with(:name => 'issue[description]').value = @opts[:description] || @opts[:subject]
         @opts[:file].each_with_index do |file, i|
           f.file_uploads_with(:name => "attachments[#{i.to_s()}][file]").first.file_name = file
@@ -159,12 +161,17 @@ command_options = case command
       opt :priority,    "Priority",                     :type => String
       opt :status,      "Status",                       :type => String, :short => 'x'
       opt :category,    "Category",                     :type => String
+      opt :fixed_version_id,    "Target Version",       :type => String, :short => 'v'
       opt :file, 		    "File",                         :type => String, :multi => true
     end
   when "list"
     Trollop::options do
       opt :number,     "Number of issues to display",   :type => Integer, :default => 5
       opt :query_id,   "Optional custom query id",      :type => Integer
+  end
+  when "versions"
+    Trollop::options do
+      opt :id, "Id",                  :id => String
     end
   else
     Trollop::die "Uknown command #{command}"
