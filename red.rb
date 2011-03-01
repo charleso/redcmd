@@ -87,7 +87,7 @@ module Textgoeshere
           end
         end
         f.field_with(:name => 'issue[subject]').value = @opts[:subject]
-        f.field_with(:name => 'issue[fixed_version_id]').value = getversions[@opts[:fixed_version_id]] || 
+        f.field_with(:name => 'issue[fixed_version_id]').value = getformoptions('issue_fixed_version_id')[@opts[:fixed_version_id]] || 
             (raise "Version not found #{@opts[:fixed_version_id]}")
         f.field_with(:name => 'issue[description]').value = @opts[:description] || @opts[:subject]
         (@opts[:file] || {}).each_with_index do |file, i|
@@ -119,13 +119,13 @@ module Textgoeshere
 
     def versions
       @mech.get(create_issue_action)
-       getversions.each do |key, value|
+       getformoptions('issue_fixed_version_id').each do |key, value|
             puts key
        end
     end
     
-    def getversions
-        versions = @mech.page.parser.xpath('//select[@id="issue_fixed_version_id"]/option')
+    def getformoptions(form_id)
+        versions = @mech.page.parser.xpath("//select[@id='#{form_id}']/option")
         hash = {}
         versions.each do |version|
            hash[version.inner_html] = version['value']
