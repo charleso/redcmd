@@ -110,8 +110,9 @@ module Textgoeshere
         @opts[:number].times do |i|
           issue = issues[i]
           break unless issue
+          id = issue.xpath('td[@class="checkbox"]/input/@value')
           subject = issue.xpath('td[@class="subject"]/a').inner_html
-          puts subject
+          puts "\##{id}: #{subject}"
         end
       end
     end
