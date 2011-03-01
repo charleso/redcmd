@@ -146,7 +146,7 @@ global_options = Trollop::options do
   opt :url,         "Url to redmine",               :type => String
   opt :project,     "Project identifier",           :type => String
   opt :filename,    "Configuration file, YAML format, specifying default options.", 
-          :type => String, :default => ".red"
+          :type => String, :default => File.expand_path("~/.red")
   version VER
   stop_on COMMANDS
 end
