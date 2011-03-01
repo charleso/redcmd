@@ -43,6 +43,7 @@ EOS
 begin
   require 'trollop'
   require 'mechanize'
+  require 'uri'
 rescue LoadError
   require 'rubygems'
   require 'trollop'
@@ -66,7 +67,7 @@ module Textgoeshere
     
     def login
       @mech.get login_url
-      @mech.page.form_with(:action => login_action) do |f|
+      @mech.page.form_with(:action => /login/) do |f|
         f.field_with(:name => 'username').value = @opts[:username]
         f.field_with(:name => 'password').value = @opts[:password]
         f.click_button
@@ -111,11 +112,13 @@ module Textgoeshere
       end
     end
     
+    def url; URI.split(@opts[:url])[0..4]; end
+    def pre; URI.split(@opts[:url])[5]; end
     def login_action; '/login'; end
     def login_url; "#{@opts[:url]}#{login_action}"; end
       
-    def create_issue_action; "/projects/#{@opts[:project]}/issues/new"; end
-    def new_issue_url; "#{@opts[:url]}#{create_issue_action}"; end
+    def create_issue_action; "#{pre}/projects/#{@opts[:project]}/issues/new"; end
+    def new_issue_url; "#{url}#{create_issue_action}"; end
     def list_issues_url
       params = @opts[:query_id] ? "?query_id=#{@opts[:query_id]}" : "" 
       "#{@opts[:url]}/projects/#{@opts[:project]}/issues#{params}"
