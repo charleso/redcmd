@@ -116,6 +116,22 @@ module Textgoeshere
         end
       end
     end
+
+    def versions
+      @mech.get(create_issue_action)
+       getversions.each do |key, value|
+            puts key
+       end
+    end
+    
+    def getversions
+        versions = @mech.page.parser.xpath('//select[@id="issue_fixed_version_id"]/option')
+        hash = {}
+        versions.each do |version|
+           hash[version.inner_html] = version['value']
+        end
+        hash.sort_by{|k,v| k}
+    end
     
     def url; URI.split(@opts[:url])[0..4]; end
     def pre; URI.split(@opts[:url])[5]; end
