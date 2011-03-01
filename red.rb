@@ -78,6 +78,12 @@ module Textgoeshere
     def add
       @mech.get new_issue_url
       @mech.page.form_with(:action => create_issue_action) do |f|
+        updatefields(f)
+        puts "Created #{@mech.page.search('h2').text}: #{@opts[:subject]}"
+      end
+    end
+    
+    def updatefields(f)
         SELECTS.each do |name|
           value = @opts[name.to_sym]
           unless value.nil?
@@ -85,11 +91,10 @@ module Textgoeshere
             field.value = field.options.detect { |o| o.text.downcase =~ Regexp.new(value) }
             raise RedmineError.new("Cannot find #{name} #{value}") if field.value.nil? || field.value.empty?
           end
-        end
-        f.field_with(:name => 'issue[subject]').value = @opts[:subject]
-        f.field_with(:name => 'issue[fixed_version_id]').value = getformoptions('issue_fixed_version_id')[@opts[:fixed_version_id]] || 
-            (raise "Version not found #{@opts[:fixed_version_id]}")
-        f.field_with(:name => 'issue[description]').value = @opts[:description] || @opts[:subject]
+      end
+        @opts[:subject] && f.field_with(:name => 'issue[subject]').value = @opts[:subject]
+        @opts[:description] && f.field_with(:name => 'issue[description]').value = @opts[:description] || ""
+        @opts[:notes] && f.field_with(:name => 'notes').value = @opts[:notes]
         (@opts[:file] || {}).each_with_index do |file, i|
           f.file_uploads_with(:name => "attachments[#{i.to_s()}][file]").first.file_name = file
         end
@@ -97,8 +102,6 @@ module Textgoeshere
             f.click_button
             catch_redmine_errors
         end
-        puts "Created #{@mech.page.search('h2').text}: #{@opts[:subject]}"
-      end
     end
     
     def list
@@ -145,6 +148,16 @@ module Textgoeshere
         puts "Target version: " + attributes.xpath('//td[@class="fixed-version"]/a').inner_html
     end
     
+    def update
+        edit_url = "#{pre}/issues/#{@opts[:id]}/edit"
+        @mech.get edit_url
+        @mech.page.form_with(:action => edit_url) do |f|
+            updatefields(f)
+            puts @mech.page.search("//div[@id='content']/div[@class='flash notice']").inner_html
+            puts @mech.page.search("//div[@id='errorExplanation']").inner_html
+        end
+    end
+    
     def url; URI.split(@opts[:url])[0..4]; end
     def pre; URI.split(@opts[:url])[5]; end
     def login_action; '/login'; end
@@ -166,7 +179,7 @@ end
 
 # NOTE: Trollop's default default for boolean values is false, not nil, so if extending to include boolean options ensure you explicity set :default => nil
 
-COMMANDS = %w(add list show)
+COMMANDS = %w(add list show update)
 
 global_options = Trollop::options do
   banner BANNER
@@ -193,9 +206,21 @@ command_options = case command
       opt :status,      "Status",                       :type => String, :short => 'x'
       opt :category,    "Category",                     :type => String
       opt :dryrun,      "Dry-run",                      :short => 'n'
-      opt :fixed_version_id,    "Target Version",       :type => String, :short => 'v'
+      opt :fixed_version,    "Target Version",       :type => String, :short => 'v'
       opt :file, 		    "File",                         :type => String, :multi => true
     end
+  when "update"
+    Trollop::options do
+      opt :id,          "Id",                           :type => String, :required => true
+      opt :assigned_to, "Assigned to",                  :type => String
+      opt :priority,    "Priority",                     :type => String
+      opt :status,      "Status",                       :type => String, :short => 'x'
+      opt :category,    "Category",                     :type => String
+      opt :dryrun,      "Dry-run"
+      opt :notes,      "Notes",                         :type => String
+      opt :fixed_version,    "Target Version",         :type => String, :short => 'v'
+      opt :file, 		    "File",                         :type => String, :multi => true
+  end
   when "list"
     Trollop::options do
       opt :number,     "Number of issues to display",   :type => Integer, :default => 5
