@@ -133,6 +133,18 @@ module Textgoeshere
         hash.sort_by{|k,v| k}
     end
     
+    def show
+        @mech.get("#{pre}/issues/#{@opts[:id]}")
+        content = @mech.page.parser.xpath('//div[@id="content"]')
+        puts "Id: " + content.xpath('//h2').inner_html
+        puts "Title: " + content.xpath('//div[2]/h3').inner_html
+        attributes = content.xpath('//table[@class="attributes"]')
+        puts "Status: " + attributes.xpath('//td[@class="status"]').inner_html
+        puts "Priority: " + attributes.xpath('//td[@class="priority"]').inner_html
+        puts "Assigned to: " + attributes.xpath('//td[@class="assigned-to"]').inner_html
+        puts "Target version: " + attributes.xpath('//td[@class="fixed-version"]/a').inner_html
+    end
+    
     def url; URI.split(@opts[:url])[0..4]; end
     def pre; URI.split(@opts[:url])[5]; end
     def login_action; '/login'; end
@@ -154,7 +166,7 @@ end
 
 # NOTE: Trollop's default default for boolean values is false, not nil, so if extending to include boolean options ensure you explicity set :default => nil
 
-COMMANDS = %w(add list)
+COMMANDS = %w(add list show)
 
 global_options = Trollop::options do
   banner BANNER
@@ -193,6 +205,10 @@ command_options = case command
     Trollop::options do
       opt :id, "Id",                  :id => String
     end
+  when "show"
+    Trollop::options do
+      opt :id,          "Id",                           :type => String, :required => true
+  end
   else
     Trollop::die "Uknown command #{command}"
 end
