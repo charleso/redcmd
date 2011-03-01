@@ -93,8 +93,10 @@ module Textgoeshere
         (@opts[:file] || {}).each_with_index do |file, i|
           f.file_uploads_with(:name => "attachments[#{i.to_s()}][file]").first.file_name = file
         end
-        f.click_button
-        catch_redmine_errors
+        if not @opts[:dryrun]
+            f.click_button
+            catch_redmine_errors
+        end
         puts "Created #{@mech.page.search('h2').text}: #{@opts[:subject]}"
       end
     end
@@ -161,6 +163,7 @@ command_options = case command
       opt :priority,    "Priority",                     :type => String
       opt :status,      "Status",                       :type => String, :short => 'x'
       opt :category,    "Category",                     :type => String
+      opt :dryrun,      "Dry-run",                      :short => 'n'
       opt :fixed_version_id,    "Target Version",       :type => String, :short => 'v'
       opt :file, 		    "File",                         :type => String, :multi => true
     end
