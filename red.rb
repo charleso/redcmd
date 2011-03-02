@@ -148,7 +148,9 @@ module Textgoeshere
         puts "Target version: " + attributes.xpath('//td[@class="fixed-version"]/a').inner_html
         @mech.page.parser.xpath("//div[@id='history']/div").each do |div|
             puts
-            puts div.xpath("h4").text.gsub("\n", "").gsub("\t", "").gsub("        ", ": ")
+            h4 = div.xpath("h4").text.gsub("\n", "").gsub("\t", "").gsub("        ", ": ")
+            puts h4
+            printline(h4, '-')
             if not div.xpath("ul/li").empty?
                 puts
                 puts div.xpath("ul/li[1]").text
@@ -157,6 +159,13 @@ module Textgoeshere
             puts
             puts div.xpath("div//p").text
         end
+    end
+    
+    def printline(string, char)
+        string.each_char do |c|
+            print char
+        end
+        puts
     end
     
     def update
