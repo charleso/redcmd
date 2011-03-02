@@ -76,7 +76,7 @@ module Textgoeshere
     end
     
     def add
-      @mech.get new_issue_url
+      @mech.get create_issue_action
       @mech.page.form_with(:action => create_issue_action) do |f|
         updatefields(f)
         puts "Created #{@mech.page.search('h2').text}: #{@opts[:subject]}"
@@ -164,7 +164,6 @@ module Textgoeshere
     def login_url; "#{@opts[:url]}#{login_action}"; end
       
     def create_issue_action; "#{pre}/projects/#{@opts[:project]}/issues/new"; end
-    def new_issue_url; "#{url}#{create_issue_action}"; end
     def list_issues_url
       params = @opts[:query_id] ? "?query_id=#{@opts[:query_id]}" : "" 
       "#{@opts[:url]}/projects/#{@opts[:project]}/issues#{params}"
