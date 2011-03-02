@@ -146,6 +146,12 @@ module Textgoeshere
         puts "Priority: " + attributes.xpath('//td[@class="priority"]').inner_html
         puts "Assigned to: " + attributes.xpath('//td[@class="assigned-to"]').inner_html
         puts "Target version: " + attributes.xpath('//td[@class="fixed-version"]/a').inner_html
+        @mech.page.parser.xpath("//div[@id='history']/div").each do |div|
+            puts
+            puts div.xpath("h4").text.gsub("\n", "").gsub("\t", "").gsub("        ", ": ")
+            puts
+            puts div.xpath("div//p").text
+        end
     end
     
     def update
