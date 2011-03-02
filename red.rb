@@ -149,6 +149,11 @@ module Textgoeshere
         @mech.page.parser.xpath("//div[@id='history']/div").each do |div|
             puts
             puts div.xpath("h4").text.gsub("\n", "").gsub("\t", "").gsub("        ", ": ")
+            if not div.xpath("ul/li").empty?
+                puts
+                puts div.xpath("ul/li[1]").text
+                puts div.xpath("ul/li[2]").text
+            end
             puts
             puts div.xpath("div//p").text
         end
