@@ -54,7 +54,7 @@ module Textgoeshere
   class RedmineError < StandardError; end
   
   class Red
-    SELECTS = %w{priority tracker category assigned_to status}
+    SELECTS = %w{priority tracker category assigned_to status fixed_version}
     
     def initialize(command, opts)
       @opts = opts
