@@ -139,13 +139,13 @@ module Textgoeshere
     def show
         @mech.get("#{pre}/issues/#{@opts[:id]}")
         content = @mech.page.parser.xpath('//div[@id="content"]')
-        puts "Id: " + content.xpath('//h2').inner_html
-        puts "Title: " + content.xpath('//div[2]/h3').inner_html
+        puts "Id: " + content.xpath('//h2').text
+        puts "Title: " + content.xpath('//div[2]/h3').text
         attributes = content.xpath('//table[@class="attributes"]')
-        puts "Status: " + attributes.xpath('//td[@class="status"]').inner_html
-        puts "Priority: " + attributes.xpath('//td[@class="priority"]').inner_html
-        puts "Assigned to: " + attributes.xpath('//td[@class="assigned-to"]').inner_html
-        puts "Target version: " + attributes.xpath('//td[@class="fixed-version"]/a').inner_html
+        puts "Status: " + attributes.xpath('//td[@class="status"]').text
+        puts "Priority: " + attributes.xpath('//td[@class="priority"]').text
+        puts "Assigned to: " + attributes.xpath('//td[@class="assigned-to"]').text
+        puts "Target version: " + attributes.xpath('//td[@class="fixed-version"]/a').text
         @mech.page.parser.xpath("//div[@id='history']/div").each do |div|
             puts
             h4 = div.xpath("h4").text.gsub("\n", "").gsub("\t", "").gsub("        ", ": ")
