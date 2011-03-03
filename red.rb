@@ -165,8 +165,11 @@ module Textgoeshere
                 puts div.xpath("ul/li[1]").text
                 puts div.xpath("ul/li[2]").text
             end
-            puts
-            puts div.xpath("div//p").text
+            note = div.xpath("div//p")
+            if not note.empty?
+                puts
+                puts div.xpath("div//p").text
+            end
         end
     end
     
